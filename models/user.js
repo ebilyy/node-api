@@ -3,23 +3,26 @@ const Schema = require('mongoose').Schema;
 const bcrypt = require('bcrypt');
 
 const UserSchema = new Schema({
-  login: { type: String, unique: true, lowercase: true, index: true},
-  password: String
+  name: { type: String, },
+  verification: { type: Boolean, default: false },
+  email: { type: String, unique: true, index: true },
+  password: { type: String, required: true },
+  roles: [{ type: String }]
 });
 
-UserSchema.pre('save', async function(next){
-  if(!this.isModified('password')){
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     return next()
   }
 
-  const salt =  await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(this.password, salt);
   this.password = hash;
 
   next();
 })
 
-UserSchema.methods.comparePasswords = function(password){
+UserSchema.methods.comparePasswords = function (password) {
 
   return bcrypt.compare(password, this.password)
 }

@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const bluebird = require('bluebird');
 
@@ -15,36 +14,36 @@ const pageRoute = require('./routes/page');
 const app = express();
 
 mongoose.Promise = bluebird;
-mongoose.connect(config.database, err=>{
+mongoose.connect(config.database, err => {
   if (err) throw err;
 
   console.log(`Mongo connected`);
 })
 
 
-app.listen(config.port, err=>{
-  if(err) throw err;
+app.listen(config.port, err => {
+  if (err) throw err;
 
   console.log(`Server listening on port ${config.port}`)
 })
 
 app.use(morgan('tiny'));
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(session({
-  resave: true,
-  saveUninitialized: true,
+  // resave: true,s
+  // saveUninitialized: true,
   secret: config.secret
 }));
 
 // app.get('*', async(req, res)=>{
 //   res.end(`hello world`)
-// })
+// }) 
 
 app.use('/api', authRoute)
 app.use('/api', checkToken, userRoute)
 app.use(getUser)
 app.use('/api', checkToken, pageRoute)
-// app.get('/test', checkToken, (req, res)=>{
-//   res.json('test')
-// })
+app.get('/test', checkToken, (req, res) => {
+  res.json('test')
+})
 app.use(errorHandler)

@@ -2,14 +2,14 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
-const signup = async (req, res, next) =>{
-  // res.json('singup');
+const signup = async (req, res, next) => {
 
   const credentials = req.body;
   let user;
-  try{
+
+  try {
     user = await User.create(credentials);
-  } catch ({message}){
+  } catch ({ message }) {
     // handle errors
     return next({
       status: 400,
@@ -17,12 +17,13 @@ const signup = async (req, res, next) =>{
     });
   }
   return res.json(user);
+
 }
-const signin = async (req, res, next) =>{
+const signin = async (req, res, next) => {
 
-  const {login, password } = req.body;
+  const { login, password } = req.body;
 
-  const user = await User.findOne({login})
+  const user = await User.findOne({ login })
 
   if (!user) {
     return next({
@@ -32,9 +33,9 @@ const signin = async (req, res, next) =>{
   }
 
   try {
-    const result = await user.comparePasswords (password)
-    // console.log(result)
-    if(!result){
+    const result = await user.comparePasswords(password);
+    console.log(result);
+    if (!result) {
       throw new Error;
     }
   } catch (error) {
@@ -44,7 +45,7 @@ const signin = async (req, res, next) =>{
     })
   }
 
-  const token = jwt.sign({_id: user._id}, config.secret)
+  const token = jwt.sign({ _id: user._id }, config.secret)
   // jwt.signin()
   // req.session.userId = user._id;
 
